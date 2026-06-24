@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ANDZ ✪ THEME MANAGER — Documentation</title>
+<style>
+  :root {
+    --bg: #16181d;
+    --card: #1d2027;
+    --card-2: #23262e;
+    --border: #2c3038;
+    --text: #d4d8df;
+    --muted: #8b939f;
+    --heading: #f0f2f5;
+    --accent: #f28b3c;
+    --code-bg: #0f1115;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 32px 28px 100px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+  }
+  h1, h2, h3 { color: var(--heading); line-height: 1.25; }
+  h1 { font-size: 32px; margin-bottom: 4px; }
+  h2 { font-size: 24px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 52px; }
+  h3 { font-size: 19px; margin-top: 40px; }
+  a { color: var(--accent); }
+  code { font-family: "JetBrains Mono", Consolas, monospace; background: var(--code-bg); color: #e6e1d6; padding: 2px 6px; font-size: 0.9em; }
+  ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+
+  /* Image + legend card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px;
+    margin: 22px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.25);
+  }
+  .card .cap {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin: 0 0 10px 2px;
+  }
+  .card img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+    margin: 0 0 16px;
+  }
+  .card .note { color: var(--muted); font-style: italic; margin: 0 0 12px 2px; }
+
+  /* Matrix: [n][label][comment]; cell borders span the full row height. */
+  .legend {
+    display: grid;
+    grid-template-columns: auto max-content 1fr;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+  }
+  .legend > span {
+    padding: 8px 12px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .legend .n { text-align: center; font-weight: 700; color: var(--accent); background: var(--card-2); }
+  .legend .k { font-weight: 600; color: var(--heading); background: rgba(255,255,255,.015); }
+  .legend .v { color: #b6bcc6; }
+  .legend .v.full { grid-column: 2 / -1; }
+
+  dl { margin: 8px 0 0; }
+  dt { font-weight: 600; color: var(--heading); margin-top: 14px; }
+  dd { margin: 2px 0 0 20px; color: var(--text); }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    margin: 12px 0;
+  }
+  .feature-grid > span {
+    padding: 8px 12px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .feature-grid .k { font-weight: 600; color: var(--heading); background: rgba(255,255,255,.015); }
+  .feature-grid .v { color: #b6bcc6; }
+
+  .sidenav {
+    position: fixed;
+    left: 20px;
+    top: 48px;
+    width: 188px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .sidenav a {
+    color: #bfc5ce;
+    text-decoration: none;
+    font-size: 0.83em;
+    font-weight: 600;
+    padding: 6px 10px 5px;
+    margin-top: 12px;
+    border-left: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sidenav a:first-child { margin-top: 0; }
+  .sidenav a.sub {
+    font-size: 0.75em;
+    font-weight: 400;
+    padding: 3px 10px 3px 12px;
+    margin-top: 0;
+    margin-left: 9px;
+    border-left: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .sidenav a:hover { color: var(--heading); border-left-color: var(--accent); opacity: 1; }
+  @media (max-width: 1380px) { .sidenav { display: none; } }
+
+  .code-block {
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+  .code-block .line {
+    padding: 6px 14px;
+    color: #e6e1d6;
+    white-space: pre;
+  }
+  .code-block .line:nth-child(even) { background: rgba(255,255,255,0.035); }
+</style>
+</head>
+<body>
+
+<nav class="sidenav">
+  <a href="#features">Features</a>
+  <a href="#workflow" class="sub">Core workflow</a>
+  <a href="#qol" class="sub">Quality of life</a>
+  <a href="#requirements">Requirements</a>
+  <a href="#terminology">Terminology</a>
+  <a href="#quickstart">Quick Start</a>
+  <a href="#qs-demo" class="sub">With demo presets</a>
+  <a href="#qs-manual" class="sub">Without presets</a>
+  <a href="#qs-generator" class="sub">Color Palette Generator</a>
+  <a href="#components">Components</a>
+  <a href="#cpg" class="sub">Preset Generator</a>
+  <a href="#pcw" class="sub">Preset Collection</a>
+  <a href="#ctw" class="sub">Theme Window</a>
+  <a href="#themepalette" class="sub">ThemePalette</a>
+  <a href="#api">Runtime API</a>
+  <a href="#api-switch" class="sub">Switching presets</a>
+  <a href="#api-events" class="sub">Events</a>
+</nav>
+
+<h1>ANDZ ✪ THEME MANAGER</h1>
+<p>Centralized color, font and selectable theming for Unity UGUI. Changing a color across fifty UI elements should not take fifty clicks. Define every color, font and button style in one place. Bind elements to named entries once and switch the entire scene in a single click, from the editor or at runtime, instant or animated.</p>
+
+<h2 id="requirements">Requirements</h2>
+<div class="feature-grid">
+  <span class="k">Unity</span><span class="v">6 or higher</span>
+  <span class="k">TextMeshPro</span><span class="v">installed</span>
+</div>
+
+<h2 id="terminology">Terminology</h2>
+<div class="feature-grid">
+  <span class="k">Preset</span><span class="v">A single named set of values: colors, font settings or selectable settings.</span>
+  <span class="k">Entry</span><span class="v">One named slot inside a Preset. For example a color named "Background" or a font setting called "Header".</span>
+  <span class="k">Collection</span><span class="v">A group of Presets that share the same structure of entries. Swapping themes means applying a different Preset from the same Collection.</span>
+  <span class="k">ThemePalette</span><span class="v">The singleton scene component that holds the active Collections and Presets.</span>
+  <span class="k">Receiver</span><span class="v">A MonoBehaviour on a scene object that listens to the ThemePalette and applies style changes.</span>
+  <span class="k">Binding</span><span class="v">The link between a scene object and a named preset entry.</span>
+  <span class="k">Theme Editor</span><span class="v">The editor window for binding scene elements to entries.</span>
+</div>
+
+<h2 id="features">Features</h2>
+
+<h3 id="workflow">The core workflow</h3>
+<div class="feature-grid">
+  <span class="k">Import your colors</span><span class="v">Convert any image to a clean color palette or build one by hand.</span>
+  <span class="k">Create preset assets</span><span class="v">Create presets for colors, fonts and selectables independently. All data lives in ScriptableObjects you can reuse across scenes and projects.</span>
+  <span class="k">Create preset collections</span><span class="v">Bundle presets into a Collection. Collections keep every preset compatible with each other so theme switches stay clean.</span>
+  <span class="k">Add a ThemePalette</span><span class="v">Add a ThemePalette to your scene. Assign presets or preset collections. All editing and switching happens through this one component.</span>
+  <span class="k">Bind elements</span><span class="v">Open the Theme Editor. Bind elements to entries via drag and drop.</span>
+  <span class="k">Switch themes</span><span class="v">Preview different themes instantly in edit mode or with animated options at runtime.</span>
+  <span class="k">Edit continously</span><span class="v">Preset edits apply to scene elements instantly. Changes in the scene update editor windows instantly.</span>
+</div>
+
+<h3 id="qol">Quality of life</h3>
+<div class="feature-grid">
+  <span class="k">Visual workflow, no code</span><span class="v">The entire workflow is visual. No code needed. Drag and drop.</span>
+  <span class="k">Full undo history</span><span class="v">Every editor action is fully undo-aware. Misclick, undo, move on.</span>
+  <span class="k">One binding per prefab</span><span class="v">Multiple instances of the same prefab collapse into a single entry. Bind once and it hits every instance in the scene.</span>
+  <span class="k">Scene selection sync</span><span class="v">Select an object in the scene and it highlights in the Theme Editor. Ping or select straight back without leaving the tool.</span>
+  <span class="k">Live search and filters</span><span class="v">Live search, sortable columns and filters keep the list under control no matter how large the scene gets.</span>
+  <span class="k">Hide inactive elements</span><span class="v">Hide elements that are inactive in the hierarchy. Keep the list short when only part of the UI is active.</span>
+  <span class="k">Ignore elements</span><span class="v">Mark any element as ignored and hide it from the list on demand. Useful for elements you never want to theme.</span>
+  <span class="k">In-editor visual previews</span><span class="v">Sprite thumbnails in the color tab, label text rendered in the real font in the font tab, interactive button states in the selectables tab.</span>
+  <span class="k">7 palette sort modes</span><span class="v">Sort the extracted palette by coverage, position, brightness, saturation, hue, temperature or value. Reverse with one click. Sort before you export.</span>
+</div>
+
+<h2 id="quickstart">Quick Start</h2>
+
+<h3 id="qs-demo">With the included demo presets</h3>
+<a href="https://youtu.be/iNQmrHD-ueA" target="_blank" style="display:block;position:relative;margin:16px 0;border:1px solid var(--border);overflow:hidden;text-decoration:none">
+  <img src="https://img.youtube.com/vi/iNQmrHD-ueA/maxresdefault.jpg" style="display:block;width:100%;height:auto;border:0">
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)">
+    <svg width="68" height="48" viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
+      <rect width="68" height="48" rx="10" fill="#f00" opacity=".9"/>
+      <polygon points="26,14 26,34 46,24" fill="#fff"/>
+    </svg>
+  </div>
+</a>
+<ol>
+  <li>Open <code>AndzColorTheme/Demo/Scenes Quickstart/Demo_Quickstart</code></li>
+  <li>Open <strong>Tools ▸ Theme Editor</strong></li>
+  <li>In the Theme Editor click <strong>Setup Scene</strong></li>
+  <li>Select the ThemePalette GameObject and assign any preset collections from <code>AndzColorTheme/Demo/Presets/</code></li>
+  <li>In the Theme Editor drag elements into the desired groups</li>
+</ol>
+
+<h3 id="qs-manual">Without included presets</h3>
+<a href="https://youtu.be/YW8e9va5Z6I" target="_blank" style="display:block;position:relative;margin:16px 0;border:1px solid var(--border);overflow:hidden;text-decoration:none">
+  <img src="https://img.youtube.com/vi/YW8e9va5Z6I/maxresdefault.jpg" style="display:block;width:100%;height:auto;border:0">
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)">
+    <svg width="68" height="48" viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
+      <rect width="68" height="48" rx="10" fill="#f00" opacity=".9"/>
+      <polygon points="26,14 26,34 46,24" fill="#fff"/>
+    </svg>
+  </div>
+</a>
+<ol>
+  <li>Create preset collections: <strong>Assets ▸ Create ▸ AndzColorTheme ▸ *PresetCollection</strong></li>
+  <li>Double-click a collection asset to open the Preset Collection Window</li>
+  <li>Edit the collection: add presets on the left, adjust their settings on the right</li>
+  <li>Open <strong>Tools ▸ Theme Editor</strong></li>
+  <li>Add a ThemePalette to the scene by clicking <strong>Setup Scene</strong> in the Theme Editor, or by adding a ThemePalette component to any GameObject</li>
+  <li>Select the ThemePalette GameObject and assign presets to the inspector slots</li>
+  <li>In the Theme Editor drag elements into the desired groups</li>
+</ol>
+
+<h3 id="qs-generator">Using the Color Palette Generator</h3>
+<a href="https://youtu.be/GvU4gslJdEA" target="_blank" style="display:block;position:relative;margin:16px 0;border:1px solid var(--border);overflow:hidden;text-decoration:none">
+  <img src="https://img.youtube.com/vi/GvU4gslJdEA/maxresdefault.jpg" style="display:block;width:100%;height:auto;border:0">
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)">
+    <svg width="68" height="48" viewBox="0 0 68 48" xmlns="http://www.w3.org/2000/svg">
+      <rect width="68" height="48" rx="10" fill="#f00" opacity=".9"/>
+      <polygon points="26,14 26,34 46,24" fill="#fff"/>
+    </svg>
+  </div>
+</a>
+<ol>
+  <li>Open <strong>Tools ▸ Color Preset Generator</strong></li>
+  <li>Extract colors from a reference image: drag it into the window or click <strong>Import</strong></li>
+  <li>Add, remove, edit or rearrange the palette entries as needed</li>
+  <li>Click <strong>Export</strong> to save the palette as a color preset asset</li>
+  <li>Ideally create at least a second palette the same way</li>
+  <li>Select multiple color preset assets in the Project window, right-click and choose <strong>Convert to Color Preset Collection</strong></li>
+  <li>Create a GameObject with a ThemePalette component and assign the Collection</li>
+  <li>Open <strong>Tools ▸ Color Theme Window</strong> and drag elements into the desired groups</li>
+</ol>
+
+<h2 id="components">Components</h2>
+
+<h3 id="cpg">Color Preset Generator</h3>
+<p><code>Tools ▸ Color Preset Generator</code></p>
+<p>Extract colors from any image by clicking Import or dragging an image into the window, or build a palette by hand. Add, remove, edit and rename colors at any time. For best results create multiple presets and bundle them into a Color Preset Collection: select the presets in the Project window, right-click and choose "Convert to Color Preset Collection".</p>
+<div class="card">
+  <div class="cap">Color Preset Generator</div>
+  <img src="Documentation~/Color Preset Generator - Edit.png" alt="Color Preset Generator">
+  <div class="legend">
+    <span class="n">1</span><span class="k">Import</span><span class="v">open a file browser to pick an image and extract its colors</span>
+    <span class="n">2</span><span class="k">Export</span><span class="v">open a file browser to save the current colors as a color preset</span>
+    <span class="n">3</span><span class="k">Reset</span><span class="v">clear all colors from the window</span>
+    <span class="n">4</span><span class="k">Sort mode</span><span class="v">cycle through the different color sorting modes</span>
+    <span class="n">5</span><span class="k">Reverse</span><span class="v">flip the sort order</span>
+    <span class="n">6</span><span class="k">Add color</span><span class="v">add a new color</span>
+    <span class="n">7</span><span class="k">Color name</span><span class="v">click to rename a color</span>
+    <span class="n">8</span><span class="k">Color picker</span><span class="v">click to edit a color</span>
+    <span class="n">9</span><span class="k">Remove color</span><span class="v">delete a color</span>
+  </div>
+</div>
+
+<h3 id="pcw">Preset Collection Window</h3>
+<p>A Collection bundles multiple presets together and keeps them compatible. There are three types:</p>
+<div class="feature-grid">
+  <span class="k">Color Preset Collection</span><span class="v">for maskable graphics, UI components with a changeable color</span>
+  <span class="k">Font Preset Collection</span><span class="v">for TextMeshPro components (TMP_Text, TextMeshProUGUI, TextMeshPro, etc.)</span>
+  <span class="k">Selectable Preset Collection</span><span class="v">for selectables: buttons, toggles, sliders, etc.</span>
+</div>
+<p>A Color Preset Collection can also be created from single presets: select them in the Project window, right-click and choose "Convert to Color Preset Collection". Presets must have the same number of colors; extras are trimmed.</p>
+
+<div class="card">
+  <div class="cap">Colors</div>
+  <img src="Documentation~/PresetCollection - Colors.png" alt="Preset Collection Window: Colors">
+  <div class="legend">
+    <span class="n">1</span><span class="k">Preset list</span><span class="v">all presets in the collection with their names: click one to show it</span>
+    <span class="n">2</span><span class="k">Rename preset</span><span class="v">click to rename the selected preset</span>
+    <span class="n">3</span><span class="k">Remove preset</span><span class="v">remove the preset from the collection. this deletes the nested preset asset; undo it with Unity's undo history if it was a mistake</span>
+    <span class="n">4</span><span class="k">Color list</span><span class="v">the colors of the preset: name, order and count are the same for every preset in the collection</span>
+    <span class="n">5</span><span class="k">Rename color</span><span class="v">click to rename a color</span>
+    <span class="n">6</span><span class="k">Color picker</span><span class="v">click to edit a color</span>
+    <span class="n">7</span><span class="k">Ping</span><span class="v">highlight the collection asset in the Project window</span>
+    <span class="n">9</span><span class="k">Settings</span><span class="v">select the Settings asset that holds the styling options for this plugin's editor windows</span>
+    <span class="n">10</span><span class="k">New preset name</span><span class="v">type the name for the preset you want to add</span>
+    <span class="n">11</span><span class="k">Add preset</span><span class="v">add a new preset to the collection</span>
+    <span class="n">12</span><span class="k">New color name</span><span class="v">type the name for the color you want to add</span>
+    <span class="n">13</span><span class="k">Add color</span><span class="v">add the color to every preset</span>
+    <span class="n">14</span><span class="k">Remove color</span><span class="v">remove the color from every preset</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cap">Fonts</div>
+  <img src="Documentation~/PresetCollection - Fonts.png" alt="Preset Collection Window: Fonts">
+  <div class="legend">
+    <span class="n">1</span><span class="k">Preset list</span><span class="v">all presets in the collection with their names: click one to show it</span>
+    <span class="n">2</span><span class="k">Rename preset</span><span class="v">click to rename the selected preset</span>
+    <span class="n">3</span><span class="k">Remove preset</span><span class="v">remove the preset from the collection. this deletes the nested preset asset; undo it with Unity's undo history if it was a mistake</span>
+    <span class="n">4</span><span class="k">Font list</span><span class="v">the fonts of the preset: name, order and count are the same for every preset in the collection</span>
+    <span class="n">5</span><span class="k">Rename font</span><span class="v">click to rename a font</span>
+    <span class="n">6</span><span class="k">Font settings</span><span class="v">can be edited</span>
+    <span class="n">7</span><span class="k">Ping</span><span class="v">highlight the collection asset in the Project window</span>
+    <span class="n">9</span><span class="k">Settings</span><span class="v">select the Settings asset that holds the styling options for this plugin's editor windows</span>
+    <span class="n">10</span><span class="k">New preset name</span><span class="v">type the name for the preset you want to add</span>
+    <span class="n">11</span><span class="k">Add preset</span><span class="v">add a new preset to the collection</span>
+    <span class="n">12</span><span class="k">New font name</span><span class="v">type the name for the font you want to add</span>
+    <span class="n">13</span><span class="k">Add font</span><span class="v">add the font to every preset</span>
+    <span class="n">14</span><span class="k">Remove font</span><span class="v">remove the font from every preset</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cap">Selectables</div>
+  <img src="Documentation~/PresetCollection - Selectables.png" alt="Preset Collection Window: Selectables">
+  <div class="legend">
+    <span class="n">1</span><span class="k">Preset list</span><span class="v">all presets in the collection with their names: click one to show it</span>
+    <span class="n">2</span><span class="k">Rename preset</span><span class="v">click to rename the selected preset</span>
+    <span class="n">3</span><span class="k">Remove preset</span><span class="v">remove the preset from the collection. this deletes the nested preset asset; undo it with Unity's undo history if it was a mistake</span>
+    <span class="n">4</span><span class="k">Setting list</span><span class="v">the settings of the preset: name, order and count are the same for every preset in the collection</span>
+    <span class="n">5</span><span class="k">Rename setting</span><span class="v">click to rename a setting</span>
+    <span class="n">6</span><span class="k">Selectable settings</span><span class="v">can be edited</span>
+    <span class="n">7</span><span class="k">Ping</span><span class="v">highlight the collection asset in the Project window</span>
+    <span class="n">9</span><span class="k">Settings</span><span class="v">select the Settings asset that holds the styling options for this plugin's editor windows</span>
+    <span class="n">10</span><span class="k">New preset name</span><span class="v">type the name for the preset you want to add</span>
+    <span class="n">11</span><span class="k">Add preset</span><span class="v">add a new preset to the collection</span>
+    <span class="n">12</span><span class="k">New setting name</span><span class="v">type the name for the setting you want to add</span>
+    <span class="n">13</span><span class="k">Add setting</span><span class="v">add the setting to every preset</span>
+    <span class="n">14</span><span class="k">Remove setting</span><span class="v">remove the setting from every preset</span>
+  </div>
+</div>
+
+<h3 id="ctw">Color Theme Window</h3>
+<p><code>Tools ▸ Color Theme Window</code></p>
+<p>The main workspace for binding scene elements to entries. Tabs across the top switch between the Color, Font and Selectable domains. The left pane lists unassigned elements, the right pane has one group per entry. Drag rows across to bind them.</p>
+
+<div class="card">
+  <div class="cap">No ThemePalette in scene</div>
+  <img src="Documentation~/Theme Editor 1 - No ThemePalette In Scene.png" alt="Color Theme Window: no ThemePalette in scene">
+  <div class="legend">
+    <span class="n">→</span><span class="k">Setup Scene</span><span class="v">create a new GameObject with a ThemePalette component in the scene</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cap">No preset assigned</div>
+  <img src="Documentation~/Theme Editor 2 - No Preset assigned.png" alt="Color Theme Window: no preset assigned">
+  <div class="legend">
+    <span class="n">→</span><span class="v full">Shown separately for each of the three tabs.</span>
+    <span class="n">→</span><span class="v full">Assign a collection or at least a single preset for that category in the ThemePalette component's inspector.</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cap">Maskable Graphics tab</div>
+  <img src="Documentation~/Theme Editor - Tab - Graphics.png" alt="Color Theme Window: Graphics tab">
+  <div class="legend">
+    <span class="n">1</span><span class="k">Maskable Graphics tab</span><span class="v">the one currently open</span>
+    <span class="n">2</span><span class="k">TMP_Text tab</span><span class="v">switch to the fonts view</span>
+    <span class="n">3</span><span class="k">Selectables tab</span><span class="v">switch to the selectables view</span>
+    <span class="n">4</span><span class="k">Prefab mode toggle</span><span class="v">switch between showing normal graphics and graphics that belong to a prefab or prefab variant</span>
+    <span class="n">5</span><span class="k">Edit preset</span><span class="v">if the preset is part of a collection, open the Preset Collection Window with this preset selected; if it is a single preset, highlight its asset in the Project window</span>
+    <span class="n">6</span><span class="k">Preset switch</span><span class="v">shows the name of the current preset: click to open a dropdown and pick another preset from the collection, or use the left/right arrows to step through the presets</span>
+    <span class="n">7</span><span class="k">Sort mode</span><span class="v">cycle through the different sort modes for the graphics list</span>
+    <span class="n">8</span><span class="k">Reverse sort toggle</span><span class="v">flip the order of the graphics list</span>
+    <span class="n">9</span><span class="k">Preview toggle</span><span class="v">turn previews on or off. Graphics tab shows sprite previews. TMP_Text tab draws font entries in the selected font. Selectables tab shows an interactive square with the button states (normal, hover, mouse down)</span>
+    <span class="n">10</span><span class="k">Hide inactive toggle</span><span class="v">hide graphics that are inactive in the hierarchy (helpful for keeping the list short when only part of the UI is active)</span>
+    <span class="n">11</span><span class="k">Hide ignored toggle</span><span class="v">hide graphics that are marked as ignored (see point 15)</span>
+    <span class="n">12</span><span class="k">Settings</span><span class="v">select the Settings asset that holds the styling options for this plugin's editor windows</span>
+    <span class="n">13</span><span class="k">Refresh</span><span class="v">rebuild the window. some changes in the scene or assets are not picked up automatically</span>
+    <span class="n">14</span><span class="k">Ping</span><span class="v">single click pings the graphic in the hierarchy. double click selects it so its inspector opens</span>
+    <span class="n">15</span><span class="k">Ignore toggle</span><span class="v">mark the graphic as ignored so it can be hidden when "hide ignored" is on (see point 11)</span>
+    <span class="n">16</span><span class="k">Color preview</span><span class="v">shows the current color of the graphic</span>
+    <span class="n">17</span><span class="k">Sprite preview</span><span class="v">shows the current sprite of the graphic in its original color (if it has one)</span>
+    <span class="n">18</span><span class="k">Graphic name</span><span class="v">the name of the graphic's GameObject</span>
+    <span class="n">19</span><span class="k">Component type</span><span class="v">the component type of the graphic</span>
+    <span class="n">20</span><span class="k">Assigned groups</span><span class="v">the list of color entries and which one each graphic is assigned to</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cap">TMP_Text tab</div>
+  <img src="Documentation~/Theme Editor - Tab - Fonts.png" alt="Color Theme Window: Fonts tab">
+  <p class="note">(only showing what is different from the graphics tab)</p>
+  <div class="legend">
+    <span class="n">1</span><span class="k">Text preview</span><span class="v">shows the text that is typed into the component</span>
+    <span class="n">2</span><span class="k">Font entry name</span><span class="v">the name of the font entry in the preset (when preview is on, it is drawn in the font chosen in that entry)</span>
+    <span class="n">3</span><span class="k">Font summary</span><span class="v">a short summary of the font settings</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cap">Selectables tab</div>
+  <img src="Documentation~/Theme Editor - Tab - Selectables.png" alt="Color Theme Window: Selectables tab">
+  <p class="note">(only showing what is different from the graphics tab)</p>
+  <div class="legend">
+    <span class="n">1</span><span class="k">Preview button</span><span class="v">an interactive square that demonstrates the button states (normal, hover, mouse down)</span>
+    <span class="n">2</span><span class="k">Component type</span><span class="v">the type of selectable</span>
+    <span class="n">3</span><span class="k">Entry name</span><span class="v">the name of the entry in the preset</span>
+    <span class="n">4</span><span class="k">Transition type</span><span class="v">the transition type of the entry</span>
+  </div>
+</div>
+
+<h3 id="themepalette">Color Palette (ThemePalette)</h3>
+<p>The scene component that holds the active collection and preset for each domain. One per scene. The inspector exposes a collection field and a preset picker per domain. Switch a preset and the scene re-themes live.</p>
+<div class="card">
+  <div class="cap">ThemePalette inspector</div>
+  <img src="Documentation~/ThemePalette.png" alt="ThemePalette inspector">
+  <p style="margin:0 0 12px">Set a Collection or single preset per domain. When a Collection is assigned the preset field becomes a dropdown. Preset Change Options have two independent axes. Combine them freely.</p>
+  <p style="margin:0 0 6px;font-weight:600;color:var(--heading)">Trigger Order: when each receiver starts</p>
+  <div class="feature-grid">
+    <span class="k">Simultaneous</span><span class="v">all at once (default)</span>
+    <span class="k">Random Delay</span><span class="v">each element waits a random delay between the min and max</span>
+    <span class="k">Sequence</span><span class="v">sorted by position in the chosen direction, each offset by Sequence Delay</span>
+    <span class="k">Cascade</span><span class="v">delay scales with hierarchy depth. parents change before children</span>
+  </div>
+  <p style="margin:12px 0 6px;font-weight:600;color:var(--heading)">Apply Mode: how each element transitions once it starts</p>
+  <div class="feature-grid">
+    <span class="k">Snap</span><span class="v">instant (default)</span>
+    <span class="k">Lerp</span><span class="v">smoothly interpolates over Lerp Duration seconds using the selected Ease curve. font size and spacing lerp; font asset and style switch immediately</span>
+  </div>
+</div>
+
+<h2 id="api">Runtime / Scripting API</h2>
+<p>Switch themes from code by calling methods on <code>ThemePalette.I</code>. Pass a preset to switch immediately or include a <code>PresetChangeOptions</code> to drive an animation. Color, font and selectable presets are independent. Switch them in any order or all in the same frame.</p>
+
+<h3 id="api-switch">Switching presets</h3>
+
+<p style="margin:20px 0 4px;font-weight:600;color:var(--heading)">Graphics</p>
+<div class="code-block">
+  <div class="line">ThemePalette.I.ChangeColorPreset(ColorPreset)</div>
+  <div class="line">ThemePalette.I.ChangeColorPreset(ColorPreset, PresetChangeOptions)</div>
+</div>
+
+<p style="margin:16px 0 4px;font-weight:600;color:var(--heading)">Fonts</p>
+<div class="code-block">
+  <div class="line">ThemePalette.I.ChangeFontPreset(FontPreset)</div>
+  <div class="line">ThemePalette.I.ChangeFontPreset(FontPreset, PresetChangeOptions)</div>
+</div>
+
+<p style="margin:16px 0 4px;font-weight:600;color:var(--heading)">Selectables</p>
+<div class="code-block">
+  <div class="line">ThemePalette.I.ChangeSelectablePreset(SelectablePreset)</div>
+  <div class="line">ThemePalette.I.ChangeSelectablePreset(SelectablePreset, PresetChangeOptions)</div>
+</div>
+
+<h3 id="api-options">Building a PresetChangeOptions</h3>
+<p>Start from a factory. Chain a trigger-order modifier if needed.</p>
+<div class="code-block">
+  <div class="line"><span style="color:var(--muted)">// apply mode</span></div>
+  <div class="line">PresetChangeOptions.Snap()                                                          <span style="color:var(--muted)">// instant</span></div>
+  <div class="line">PresetChangeOptions.Lerp(0.4f)                                                      <span style="color:var(--muted)">// linear lerp over 0.4 s</span></div>
+  <div class="line">PresetChangeOptions.Lerp(0.4f, Ease.QuadOut)                                        <span style="color:var(--muted)">// lerp with easing</span></div>
+  <div class="line"></div>
+  <div class="line"><span style="color:var(--muted)">// chain a trigger order</span></div>
+  <div class="line">PresetChangeOptions.Snap().WithSequence(Direction.Down, 0.05f)                       <span style="color:var(--muted)">// staggered snap</span></div>
+  <div class="line">PresetChangeOptions.Lerp(0.4f, Ease.QuadOut).WithSequence(Direction.Down, 0.05f)    <span style="color:var(--muted)">// staggered lerp</span></div>
+  <div class="line">PresetChangeOptions.Lerp(0.3f, Ease.SineOut).WithRandomDelay(0f, 0.1f)             <span style="color:var(--muted)">// lerp after random delay</span></div>
+  <div class="line">PresetChangeOptions.Snap().WithCascade(0.03f)                                       <span style="color:var(--muted)">// cascade by hierarchy depth</span></div>
+</div>
+
+<h3 id="api-events">Reacting to theme switches</h3>
+<div class="code-block">
+  <div class="line">ThemePalette.I.e_ColorPresetChanged.AddListener(yourFunction);</div>
+  <div class="line">ThemePalette.I.e_FontPresetChanged.AddListener(yourFunction);</div>
+  <div class="line">ThemePalette.I.e_SelectablePresetChanged.AddListener(yourFunction);</div>
+</div>
+
+</body>
+</html>
