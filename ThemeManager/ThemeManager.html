@@ -164,7 +164,12 @@
   <a href="#themepalette" class="sub">ThemePalette</a>
   <a href="#api">Runtime API</a>
   <a href="#api-switch" class="sub">Switching presets</a>
+  <a href="#api-cycle" class="sub">Cycling presets</a>
+  <a href="#api-options" class="sub">Change options</a>
+  <a href="#api-default" class="sub">Default options</a>
+  <a href="#api-read" class="sub">Reading state</a>
   <a href="#api-events" class="sub">Events</a>
+  <a href="#helpers">Demo Components</a>
 </nav>
 
 <h1>ANDZ ✪ THEME MANAGER</h1>
@@ -456,30 +461,32 @@
 </div>
 
 <h2 id="api">Runtime / Scripting API</h2>
-<p>Switch themes from code by calling methods on <code>ThemePalette.I</code>. Pass a preset to switch immediately or include a <code>PresetChangeOptions</code> to drive an animation. Color, font and selectable presets are independent. Switch them in any order or all in the same frame.</p>
+<p>Everything in the scene is driven by one component: the <strong>ThemePalette</strong> singleton. Reach it from anywhere with <code>ThemePalette.I</code>. It resolves the single ThemePalette in the scene the first time you access it (inactive objects included). Color, font and selectable presets are independent: switch one, two or all three in the same frame, in any order.</p>
+<p>Every switch takes an optional <code>PresetChangeOptions</code> that decides <em>when</em> each element reacts and <em>how</em> it transitions. Omit it and the ThemePalette's default options are used.</p>
 
-<h3 id="api-switch">Switching presets</h3>
-
-<p style="margin:20px 0 4px;font-weight:600;color:var(--heading)">Graphics</p>
+<h3 id="api-switch">Switching to a specific preset</h3>
+<p>Pass a preset asset to jump straight to it. Add a <code>PresetChangeOptions</code> to animate the change.</p>
 <div class="code-block">
   <div class="line">ThemePalette.I.ChangeColorPreset(ColorPreset)</div>
   <div class="line">ThemePalette.I.ChangeColorPreset(ColorPreset, PresetChangeOptions)</div>
-</div>
-
-<p style="margin:16px 0 4px;font-weight:600;color:var(--heading)">Fonts</p>
-<div class="code-block">
+  <div class="line"></div>
   <div class="line">ThemePalette.I.ChangeFontPreset(FontPreset)</div>
   <div class="line">ThemePalette.I.ChangeFontPreset(FontPreset, PresetChangeOptions)</div>
-</div>
-
-<p style="margin:16px 0 4px;font-weight:600;color:var(--heading)">Selectables</p>
-<div class="code-block">
+  <div class="line"></div>
   <div class="line">ThemePalette.I.ChangeSelectablePreset(SelectablePreset)</div>
   <div class="line">ThemePalette.I.ChangeSelectablePreset(SelectablePreset, PresetChangeOptions)</div>
 </div>
 
+<h3 id="api-cycle">Cycling through a collection</h3>
+<p>When the domain has a Collection assigned, step forward or backward through its presets. Wraps around at the ends. These use the ThemePalette's default change options. Ideal for simple "next theme / previous theme" buttons.</p>
+<div class="code-block">
+  <div class="line">ThemePalette.I.NextColors()          <span style="color:var(--muted)">// PreviousColors()</span></div>
+  <div class="line">ThemePalette.I.NextFonts()           <span style="color:var(--muted)">// PreviousFonts()</span></div>
+  <div class="line">ThemePalette.I.NextSelectables()     <span style="color:var(--muted)">// PreviousSelectables()</span></div>
+</div>
+
 <h3 id="api-options">Building a PresetChangeOptions</h3>
-<p>Start from a factory. Chain a trigger-order modifier if needed.</p>
+<p>Start from a factory, then optionally chain one trigger-order modifier. Apply mode (Snap / Lerp) and trigger order (Simultaneous / Random / Sequence / Cascade) are independent.</p>
 <div class="code-block">
   <div class="line"><span style="color:var(--muted)">// apply mode</span></div>
   <div class="line">PresetChangeOptions.Snap()                                                          <span style="color:var(--muted)">// instant</span></div>
@@ -492,12 +499,48 @@
   <div class="line">PresetChangeOptions.Lerp(0.3f, Ease.SineOut).WithRandomDelay(0f, 0.1f)             <span style="color:var(--muted)">// lerp after random delay</span></div>
   <div class="line">PresetChangeOptions.Snap().WithCascade(0.03f)                                       <span style="color:var(--muted)">// cascade by hierarchy depth</span></div>
 </div>
+<p>Two helpers mutate the sequence direction in place, handy when cycling repeatedly:</p>
+<div class="code-block">
+  <div class="line">options.InvertSequenceDirection()      <span style="color:var(--muted)">// Down &harr; Up, Left &harr; Right</span></div>
+  <div class="line">options.RotateDirectionClockwise()     <span style="color:var(--muted)">// Up &rarr; Right &rarr; Down &rarr; Left</span></div>
+</div>
+
+<h3 id="api-default">Default change options</h3>
+<p>Set the options used by every switch that does not pass its own (including the Next/Previous cycle methods). Set it once and all subsequent switches inherit it.</p>
+<div class="code-block">
+  <div class="line">ThemePalette.I.ChangeDefaultPresetChangeOptions(PresetChangeOptions)</div>
+  <div class="line">ThemePalette.I.DefaultPresetChangeOptions      <span style="color:var(--muted)">// read the current default</span></div>
+</div>
+
+<h3 id="api-read">Reading the active state</h3>
+<p>Query what is currently assigned, for example to drive a custom label or preview.</p>
+<div class="code-block">
+  <div class="line">ThemePalette.I.ColorPresetAsset            <span style="color:var(--muted)">// active ColorPreset (also FontPresetAsset, SelectablePresetAsset)</span></div>
+  <div class="line">ThemePalette.I.ColorPresetCollection       <span style="color:var(--muted)">// active collection (also Font/Selectable)</span></div>
+  <div class="line">ThemePalette.I.GetColorEntryNames()        <span style="color:var(--muted)">// entry names (also GetFontEntryNames, GetSelectableEntryNames)</span></div>
+  <div class="line">ThemePalette.I.GetColor("Background")       <span style="color:var(--muted)">// look up a single color by entry name</span></div>
+</div>
 
 <h3 id="api-events">Reacting to theme switches</h3>
+<p>Subscribe to be notified whenever a preset or the default options change.</p>
 <div class="code-block">
   <div class="line">ThemePalette.I.e_ColorPresetChanged.AddListener(yourFunction);</div>
   <div class="line">ThemePalette.I.e_FontPresetChanged.AddListener(yourFunction);</div>
   <div class="line">ThemePalette.I.e_SelectablePresetChanged.AddListener(yourFunction);</div>
+  <div class="line">ThemePalette.I.e_DefaultPresetChangeOptionsChanged.AddListener(yourFunction);</div>
+</div>
+
+<h2 id="helpers">Demo Helper Components</h2>
+<p>The demo ships with a set of ready-made MonoBehaviours that wire the runtime API to common UI patterns, so you can build a working theme switcher with buttons and no code. Drop them on a GameObject, fill the inspector fields and play. They live in <code>Demo/Scripts</code> and are a good starting point to copy from.</p>
+
+<div class="feature-grid">
+  <span class="k">ThemeChangeButton</span><span class="v">Put it on a Button. On click it switches to one specific Color, Font or Selectable preset. Pick the domain and the target preset in the inspector. Optionally drives its own PresetChangeOptions instead of the palette default. For color buttons it can paint its own graphic with the preset's palette so the button doubles as a swatch.</span>
+  <span class="k">PresetChangeOptionButton</span><span class="v">Put it on a Button. On click it sets the ThemePalette's default change options to a configured value, so following switches animate that way (e.g. a "snap" vs "lerp" vs "cascade" selector row). The button auto-disables itself while its options are already the active default.</span>
+  <span class="k">AutoThemeChanger</span><span class="v">Cycles the assigned collections automatically on a fixed interval. Toggle color, font and selectables independently, set the interval, and optionally flip or rotate the sequence direction each step. No clicks needed, good for attract-mode demos.</span>
+  <span class="k">AutoThemeChangerMulti</span><span class="v">Like AutoThemeChanger but plays through a custom list of settings, each with its own change options, interval and repetition count. Lets you script a whole sequence of looks back to back.</span>
+  <span class="k">SceneSwitcherUI</span><span class="v">Two buttons, previous and next, that load the adjacent scene by build index. Requires the demo scenes to be added to the Build Settings scene list.</span>
+  <span class="k">ThemeResetter</span><span class="v">Strips all receiver components and resets graphics, fonts and selectables back to plain defaults. Two inspector buttons: reset this object's children, or reset the whole scene. Useful to undo a theme entirely. Choose which domains to reset and the default values in the inspector.</span>
+  <span class="k">DemoActiveColorPresetDisplay</span><span class="v">Listens to color preset changes and shows the active palette as a swatch image plus its name. A small example of subscribing to the change events.</span>
 </div>
 
 
